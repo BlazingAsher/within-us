@@ -21,7 +21,9 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class LevelScreen implements Screen {
     private Music bgMusic;
 
     private LevelStage levelStage;
+    private Stage uiStage;
     private TiledMap levelMap;
 
     private OrthogonalTiledMapRenderer levelMapRenderer;
@@ -66,6 +69,7 @@ public class LevelScreen implements Screen {
         bgMusic.play();
 
         initLevelStage();
+        initUIStage();
 
         this.gameState = GameState.RUNNING;
 
@@ -81,6 +85,10 @@ public class LevelScreen implements Screen {
         levelStage.addPlayer(player);
         levelStage.addPlayer(new PlayerActor(new Texture("badlogic.jpg"), this.levelStage, this, PlayerType.CREWMATE)); // static actor to test camera/player movement (temporary)
         levelStage.setKeyboardFocus(player);
+    }
+
+    private void initUIStage() {
+        uiStage = new Stage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT));
     }
 
     private List<Rectangle> getMapCollision() {
@@ -125,11 +133,22 @@ public class LevelScreen implements Screen {
 
         levelStage.act(Gdx.graphics.getDeltaTime());
         levelStage.draw();
+
+        uiStage.act(Gdx.graphics.getDeltaTime());
+        uiStage.draw();
+
+        if(this.gameState == GameState.RUNNING){
+            Gdx.input.setInputProcessor(levelStage);
+        }
+        else if(this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK){
+            Gdx.input.setInputProcessor(uiStage);
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         levelStage.getViewport().update(width, height, true);
+        uiStage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -154,6 +173,7 @@ public class LevelScreen implements Screen {
             levelTask.getTaskPixMap().dispose();
         }
         levelStage.dispose();
+        uiStage.dispose();
         levelMapRenderer.dispose();
         levelMap.dispose();
         mapBk.dispose();
