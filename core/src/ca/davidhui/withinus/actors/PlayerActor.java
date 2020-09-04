@@ -2,32 +2,35 @@ package ca.davidhui.withinus.actors;
 
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.Utils;
+import ca.davidhui.withinus.enums.PlayerState;
+import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.listeners.PlayerInputListener;
+import ca.davidhui.withinus.models.Task;
 import ca.davidhui.withinus.screens.LevelScreen;
+import ca.davidhui.withinus.stages.LevelStage;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
-
-import java.util.ArrayList;
 
 public class PlayerActor extends Actor {
-    private final Texture playerTexture;
-    private final Stage boundLevelStage;
+    private final Texture playerTexture; // TODO: Change this to an animation!
+    private final LevelStage boundLevelStage;
     private final LevelScreen boundLevelScreen;
+
+    private PlayerState playerState;
+    private PlayerType playerType;
 
     private int xDirection = 0;
     private int yDirection = 0;
 
-    public PlayerActor(Texture img, Stage boundLevelStage, LevelScreen boundLevelScreen){
+    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType){
         this.playerTexture = img;
         this.boundLevelStage = boundLevelStage;
         this.boundLevelScreen = boundLevelScreen;
+
+        this.playerType = playerType;
+        this.playerState = PlayerState.ALIVE;
 
         setBounds(getX(), getY(), playerTexture.getWidth(), playerTexture.getHeight());
 
@@ -40,7 +43,6 @@ public class PlayerActor extends Actor {
         batch.draw(playerTexture, getX(), getY());
     }
 
-
     public Texture getPlayerTexture() {
         return playerTexture;
     }
@@ -49,14 +51,7 @@ public class PlayerActor extends Actor {
         return new Rectangle(this.getX(), this.getY(), this.playerTexture.getWidth(), this.playerTexture.getHeight());
     }
 
-    private Rectangle checkCollision(){
-
-
-
-        return null;
-    }
-
-    private float getPermittedMovement(float desiredAmount, boolean isX){
+    private float movePlayer(float desiredAmount, boolean isX){
         float oldComponent = isX ? getX() : getY(); // store the starting x or y value
         int direction = isX ? xDirection : yDirection;
 
@@ -74,7 +69,7 @@ public class PlayerActor extends Actor {
             }
 
             // check if we collided with anything
-            for (Rectangle collisionRectangle : boundLevelScreen.getCollisionRectangles()) {
+            for (Rectangle collisionRectangle : boundLevelStage.getCollisionRectangles()) {
                 // We did, so move back and report the amount we moved
                 if (collisionRectangle.overlaps(getRectangle())) {
                     if (isX) {
@@ -100,74 +95,31 @@ public class PlayerActor extends Actor {
 
     }
 
-    private float getPermittedXMovement(float desiredAmount) {
-//        float oldX = getX();
-//        desiredAmount = Math.abs(desiredAmount);
-//
-//        // TODO: This might be a bit imprecise going up by 1
-//        for(int i = 0;i<=desiredAmount;i++){
-//            for (Rectangle collisionRectangle : boundLevelScreen.getCollisionRectangles()) {
-//                setX(getX() + xDirection);
-//                if(collisionRectangle.overlaps(getRectangle())){
-//                    setX(getX() - xDirection);
-//                    return (i-1)*xDirection;
-//                }
-//            }
-//        }
-//
-//        setX(oldX + desiredAmount*xDirection);
-//        return desiredAmount*xDirection;
-        return getPermittedMovement(desiredAmount, true);
+    private float movePlayerX(float desiredAmount) {
+        return movePlayer(desiredAmount, true);
     }
 
-    private float getPermittedYMovement(float desiredAmount) {
-//        System.out.println(desiredAmount);
-//        desiredAmount = Math.abs(desiredAmount);
-//        float oldY = getY();
-//
-//        for(int i = 0;i<=desiredAmount;i++){
-//            for (Rectangle collisionRectangle : boundLevelScreen.getCollisionRectangles()) {
-//                float newY = getY() + i*yDirection;
-//
-//                if(collisionRectangle.overlaps(getRectangle())){
-//                    setY(getY() + -yDirection);
-//                    return (i-1)*yDirection;
-//                }
-//            }
-//        }
-//
-//        setY(oldY + desiredAmount*yDirection);
-//        return desiredAmount*yDirection;
-        return getPermittedMovement(desiredAmount, false);
+    private float movePlayerY(float desiredAmount) {
+        return movePlayer(desiredAmount, false);
     }
 
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        float oldX = getX();
-
+    /**
+     * Moves the player as long as x/yDirection is set
+     * @param delta time since last tick
+     */
+    private void processMovement(float delta) {
         if(xDirection == -1){
-            float permittedXMovement = getPermittedXMovement(Utils.getAdjustedMovementSpeed() * delta);
-//            setX(getX() + permittedXMovement);
+            float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
             // If player is past the padding, move camera too
             if(getX() < boundLevelStage.getCamera().position.x - boundLevelStage.getCamera().viewportWidth/2 + GameConstants.CAMERA_PLAYER_PADDING){
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
             }
-//            System.out.println("moved");
-//            System.out.println(Utils.getAdjustedMovementSpeed() * delta);
-//            System.out.println(permittedXMovement);
-//            System.out.println(oldX-getX());
-//            System.out.println(oldX);
-//            System.out.println(getX());
-//            System.out.println("finished movement");
         }
 
         // Right movement
         if(xDirection == 1){
-            float permittedXMovement = getPermittedXMovement(Utils.getAdjustedMovementSpeed() * delta);
-//            setX(getX() + permittedXMovement);
+            float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
             if(getX() > boundLevelStage.getCamera().position.x + boundLevelStage.getCamera().viewportWidth/2 - playerTexture.getWidth() - GameConstants.CAMERA_PLAYER_PADDING){
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
@@ -176,8 +128,7 @@ public class PlayerActor extends Actor {
 
         // Up movement
         if(yDirection == 1){
-            float permittedYMovement = getPermittedYMovement(Utils.getAdjustedMovementSpeed() * delta);
-//            setY(getY() + permittedYMovement);
+            float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
             if(getY() > boundLevelStage.getCamera().position.y + boundLevelStage.getCamera().viewportHeight/2 - playerTexture.getHeight() - GameConstants.CAMERA_PLAYER_PADDING){
                 boundLevelStage.getCamera().translate(0,permittedYMovement,0);
@@ -186,8 +137,7 @@ public class PlayerActor extends Actor {
 
         // Down movement
         if(yDirection == -1){
-            float permittedYMovement = getPermittedYMovement(Utils.getAdjustedMovementSpeed() * delta);
-//            setY(getY() + permittedYMovement);
+            float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
             if(getY() < boundLevelStage.getCamera().position.y - boundLevelStage.getCamera().viewportHeight/2 + GameConstants.CAMERA_PLAYER_PADDING){
                 boundLevelStage.getCamera().translate(0, permittedYMovement, 0);
@@ -195,6 +145,22 @@ public class PlayerActor extends Actor {
         }
 
         boundLevelStage.getCamera().update();
+    }
+
+    private void checkTaskCollision() {
+        for(Task levelTask : boundLevelStage.getMapTasks()){
+            if(getRectangle().overlaps(levelTask.taskRectangle)){
+                System.out.println("task!");
+            }
+        }
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        processMovement(delta);
+        checkTaskCollision();
     }
 
     public void setxDirection(int direction){

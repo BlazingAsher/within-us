@@ -14,13 +14,13 @@
  <objectgroup id="3" name="Object Layer 1">
   <object id="3" x="1566.67" y="1288.67" width="66" height="86.6667">
    <properties>
-    <property name="taskName" value="tree"/>
+    <property name="taskName" value="TREE"/>
     <property name="type" value="task"/>
    </properties>
   </object>
   <object id="5" x="2072.67" y="1340.67" width="112" height="102.667">
    <properties>
-    <property name="taskName" value="waterfall"/>
+    <property name="taskName" value="WATERFALL"/>
     <property name="type" value="task"/>
    </properties>
   </object>
