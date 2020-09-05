@@ -54,7 +54,7 @@ public class LevelScreen implements Screen {
 
     private final InputMultiplexer runningInput = new InputMultiplexer();
 
-    public LevelScreen(final WithinUs game){
+    public LevelScreen(final WithinUs game) {
         this.game = game;
 
         spriteBatch = new SpriteBatch(); // global SpriteBatch for all stages and map
@@ -104,7 +104,7 @@ public class LevelScreen implements Screen {
     }
 
     private void initHUDStage() {
-        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game, this.spriteBatch);
+        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game, this.spriteBatch, player);
     }
 
     private List<Rectangle> getMapCollision() {
@@ -122,8 +122,8 @@ public class LevelScreen implements Screen {
         MapLayer layer = levelMap.getLayers().get(2);
         List<Task> temp = new ArrayList<>();
 
-        for (MapObject object : layer.getObjects()){
-            if(object instanceof RectangleMapObject){
+        for (MapObject object : layer.getObjects()) {
+            if (object instanceof RectangleMapObject) {
                 temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
             }
 
@@ -135,13 +135,19 @@ public class LevelScreen implements Screen {
         return this.levelMap;
     }
 
-    public void setGameState(GameState newState){
+    public void setGameState(GameState newState) {
         this.gameState = newState;
     }
 
     public UIStage getUiStage() {
         return uiStage;
     }
+
+    public HUDStage getHudStage() {
+        return hudStage;
+    }
+
+    ;
 
     @Override
     public void show() {
@@ -163,10 +169,9 @@ public class LevelScreen implements Screen {
         uiStage.act(Gdx.graphics.getDeltaTime());
         uiStage.draw();
 
-        if(this.gameState == GameState.RUNNING){
+        if (this.gameState == GameState.RUNNING) {
             Gdx.input.setInputProcessor(runningInput);
-        }
-        else if(this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK){
+        } else if (this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK) {
             Gdx.input.setInputProcessor(uiStage);
         }
     }
@@ -196,7 +201,7 @@ public class LevelScreen implements Screen {
     @Override
     public void dispose() {
 //        player.dispose();
-        for(Task levelTask : levelStage.getMapTasks()){
+        for (Task levelTask : levelStage.getMapTasks()) {
             levelTask.getTaskPixMap().dispose();
         }
         levelStage.dispose();

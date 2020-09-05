@@ -33,8 +33,8 @@ public class WithinUs extends Game {
 		assetManager.load("images/ClickButtonTask.png", Texture.class);
 		assetManager.finishLoading();
 		this.skin = assetManager.get("skins/shade/skin/uiskin.json");
-		this.setScreen(new LevelScreen(this));
-//		this.setScreen(new MainMenuScreen(this));
+//		this.setScreen(new LevelScreen(this));
+		this.setScreen(new MainMenuScreen(this));
 	}
 
 	public AssetManager getAssetManager(){

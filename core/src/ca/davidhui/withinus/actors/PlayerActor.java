@@ -28,7 +28,7 @@ public class PlayerActor extends Actor {
     private int xDirection = 0;
     private int yDirection = 0;
 
-    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType){
+    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType) {
         this.playerTexture = img;
         this.boundLevelStage = boundLevelStage;
         this.boundLevelScreen = boundLevelScreen;
@@ -55,21 +55,20 @@ public class PlayerActor extends Actor {
         return new Rectangle(this.getX(), this.getY(), this.playerTexture.getWidth(), this.playerTexture.getHeight());
     }
 
-    private float movePlayer(float desiredAmount, boolean isX){
+    private float movePlayer(float desiredAmount, boolean isX) {
         float oldComponent = isX ? getX() : getY(); // store the starting x or y value
         int direction = isX ? xDirection : yDirection;
 
         desiredAmount = Math.abs(desiredAmount);
 
         // TODO: This might be a bit imprecise going up by 1
-        for(int i = 0;i<=desiredAmount;i++){
+        for (int i = 0; i <= desiredAmount; i++) {
 
             // go one world unit in the desired direction
-            if(isX){
+            if (isX) {
                 setX(getX() + direction);
-            }
-            else {
-                setY(getY()+ direction);
+            } else {
+                setY(getY() + direction);
             }
 
             // check if we collided with anything
@@ -88,23 +87,22 @@ public class PlayerActor extends Actor {
         }
 
         // If we can move most of the way there, just move the rest (will result in some overlapping)
-        if(isX){
-            setX(oldComponent + desiredAmount*direction);
-        }
-        else {
-            setY(oldComponent + desiredAmount*direction);
+        if (isX) {
+            setX(oldComponent + desiredAmount * direction);
+        } else {
+            setY(oldComponent + desiredAmount * direction);
         }
 
-        return desiredAmount*direction;
+        return desiredAmount * direction;
 
     }
 
     public void processInteract() {
-        if(this.currentInteractableOverlap == null){
+        if (this.currentInteractableOverlap == null) {
             return;
         }
 
-        if(this.currentInteractableOverlap instanceof Task){
+        if (this.currentInteractableOverlap instanceof Task) {
             Task selectedTask = (Task) this.currentInteractableOverlap;
             System.out.println("interacting with " + selectedTask.taskType);
             this.boundLevelScreen.setGameState(GameState.DOING_TASK);
@@ -122,41 +120,42 @@ public class PlayerActor extends Actor {
 
     /**
      * Moves the player as long as x/yDirection is setee
+     *
      * @param delta time since last tick
      */
     private void processMovement(float delta) {
-        if(xDirection == -1){
+        if (xDirection == -1) {
             float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
             // If player is past the padding, move camera too
-            if(getX() < boundLevelStage.getCamera().position.x - boundLevelStage.getCamera().viewportWidth/2 + GameConstants.CAMERA_PLAYER_PADDING){
+            if (getX() < boundLevelStage.getCamera().position.x - boundLevelStage.getCamera().viewportWidth / 2 + GameConstants.CAMERA_PLAYER_PADDING) {
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
             }
         }
 
         // Right movement
-        if(xDirection == 1){
+        if (xDirection == 1) {
             float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
-            if(getX() > boundLevelStage.getCamera().position.x + boundLevelStage.getCamera().viewportWidth/2 - playerTexture.getWidth() - GameConstants.CAMERA_PLAYER_PADDING){
+            if (getX() > boundLevelStage.getCamera().position.x + boundLevelStage.getCamera().viewportWidth / 2 - playerTexture.getWidth() - GameConstants.CAMERA_PLAYER_PADDING) {
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
             }
         }
 
         // Up movement
-        if(yDirection == 1){
+        if (yDirection == 1) {
             float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
-            if(getY() > boundLevelStage.getCamera().position.y + boundLevelStage.getCamera().viewportHeight/2 - playerTexture.getHeight() - GameConstants.CAMERA_PLAYER_PADDING){
-                boundLevelStage.getCamera().translate(0,permittedYMovement,0);
+            if (getY() > boundLevelStage.getCamera().position.y + boundLevelStage.getCamera().viewportHeight / 2 - playerTexture.getHeight() - GameConstants.CAMERA_PLAYER_PADDING) {
+                boundLevelStage.getCamera().translate(0, permittedYMovement, 0);
             }
         }
 
         // Down movement
-        if(yDirection == -1){
+        if (yDirection == -1) {
             float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
-            if(getY() < boundLevelStage.getCamera().position.y - boundLevelStage.getCamera().viewportHeight/2 + GameConstants.CAMERA_PLAYER_PADDING){
+            if (getY() < boundLevelStage.getCamera().position.y - boundLevelStage.getCamera().viewportHeight / 2 + GameConstants.CAMERA_PLAYER_PADDING) {
                 boundLevelStage.getCamera().translate(0, permittedYMovement, 0);
             }
         }
@@ -165,13 +164,17 @@ public class PlayerActor extends Actor {
     }
 
     private void checkTaskCollision() {
-        for(Task levelTask : boundLevelStage.getMapTasks()){
-            if(getRectangle().overlaps(levelTask.boundRectangle)){
-                //System.out.println("task!");
+        for (Task levelTask : boundLevelStage.getMapTasks()) {
+            if (getRectangle().overlaps(levelTask.boundRectangle)) {
+//                System.out.println("task!");
                 this.currentInteractableOverlap = levelTask;
 
             }
         }
+    }
+
+    public Interactable getCurrentInteractableOverlap() {
+        return currentInteractableOverlap;
     }
 
     @Override
@@ -182,11 +185,11 @@ public class PlayerActor extends Actor {
         checkTaskCollision();
     }
 
-    public void setxDirection(int direction){
+    public void setxDirection(int direction) {
         this.xDirection = direction;
     }
 
-    public void setyDirection(int direction){
+    public void setyDirection(int direction) {
         this.yDirection = direction;
     }
 
