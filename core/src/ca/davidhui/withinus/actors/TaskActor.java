@@ -9,12 +9,13 @@ public class TaskActor extends Actor {
 
     public TaskActor(Task boundTask){
         this.boundTask = boundTask;
+        this.setBounds(this.boundTask.boundRectangle.x, this.boundTask.boundRectangle.y, this.boundTask.boundRectangle.width, this.boundTask.boundRectangle.height);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        batch.draw(this.boundTask.getTaskTextureRegion(), this.boundTask.taskRectangle.x, this.boundTask.taskRectangle.y, this.boundTask.taskRectangle.width, this.boundTask.taskRectangle.height);
+        batch.draw(this.boundTask.getTaskTextureRegion(), this.boundTask.boundRectangle.x, this.boundTask.boundRectangle.y, this.boundTask.boundRectangle.width, this.boundTask.boundRectangle.height);
     }
 
     @Override

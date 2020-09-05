@@ -27,6 +27,10 @@ public class PlayerInputListener extends InputListener {
         if(keycode == Input.Keys.S){
             boundPlayer.setyDirection(-1);
         }
+        if(keycode == Input.Keys.E){
+            System.out.println("using");
+            boundPlayer.processInteract();
+        }
         return true;
     }
 

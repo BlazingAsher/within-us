@@ -2,9 +2,11 @@ package ca.davidhui.withinus.actors;
 
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.Utils;
+import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerState;
 import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.listeners.PlayerInputListener;
+import ca.davidhui.withinus.models.Interactable;
 import ca.davidhui.withinus.models.Task;
 import ca.davidhui.withinus.screens.LevelScreen;
 import ca.davidhui.withinus.stages.LevelStage;
@@ -20,6 +22,8 @@ public class PlayerActor extends Actor {
 
     private PlayerState playerState;
     private PlayerType playerType;
+
+    private Interactable currentInteractableOverlap; // Stores the current actor
 
     private int xDirection = 0;
     private int yDirection = 0;
@@ -95,6 +99,18 @@ public class PlayerActor extends Actor {
 
     }
 
+    public void processInteract() {
+        if(this.currentInteractableOverlap == null){
+            return;
+        }
+
+        if(this.currentInteractableOverlap instanceof Task){
+            Task selectedTask = (Task) this.currentInteractableOverlap;
+            System.out.println("interacting with " + selectedTask.taskType);
+            this.boundLevelScreen.setGameState(GameState.DOING_TASK);
+        }
+    }
+
     private float movePlayerX(float desiredAmount) {
         return movePlayer(desiredAmount, true);
     }
@@ -104,7 +120,7 @@ public class PlayerActor extends Actor {
     }
 
     /**
-     * Moves the player as long as x/yDirection is set
+     * Moves the player as long as x/yDirection is setee
      * @param delta time since last tick
      */
     private void processMovement(float delta) {
@@ -149,8 +165,10 @@ public class PlayerActor extends Actor {
 
     private void checkTaskCollision() {
         for(Task levelTask : boundLevelStage.getMapTasks()){
-            if(getRectangle().overlaps(levelTask.taskRectangle)){
+            if(getRectangle().overlaps(levelTask.boundRectangle)){
                 System.out.println("task!");
+                this.currentInteractableOverlap = levelTask;
+
             }
         }
     }

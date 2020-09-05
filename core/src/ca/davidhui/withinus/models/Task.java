@@ -8,17 +8,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Task {
+public class Task extends Interactable {
     public final TaskType taskType;
-    public final Rectangle taskRectangle;
 
     private final Pixmap taskPixMap; // Using this for now to outline the task TODO: Change it to an Animation!
     private final TaskActor taskActor;
     private final TextureRegion taskTextureRegion;
 
     public Task(TaskType taskType, Rectangle taskRectangle) {
+        super(taskRectangle);
         this.taskType = taskType;
-        this.taskRectangle = taskRectangle;
 
         this.taskPixMap = new Pixmap((int) Math.ceil(taskRectangle.width), (int) Math.ceil(taskRectangle.height), Pixmap.Format.RGBA8888);
         this.taskPixMap.setColor(Color.YELLOW);
