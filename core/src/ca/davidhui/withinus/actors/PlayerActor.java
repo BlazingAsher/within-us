@@ -227,7 +227,12 @@ public class PlayerActor extends Actor {
         return playerState;
     }
 
-    public PlayerType getPlayerType() {
+    public PlayerType getPlayerType(){
         return playerType;
+    }
+
+    public void stopMovement () {
+        this.xDirection = 0;
+        this.yDirection = 0;
     }
 }

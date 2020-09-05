@@ -65,4 +65,8 @@ public class LevelStage extends Stage {
     public List<PlayerActor> getPlayers() {
         return players;
     }
+
+    public PlayerActor getSelfPlayer() {
+        return selfPlayer;
+    }
 }

@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,7 @@ public class LevelScreen implements Screen {
     }
 
     private void initHUDStage() {
-        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game, this.spriteBatch, player);
+        hudStage = new HUDStage(new StretchViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game, this.spriteBatch, player);
     }
 
     private List<Rectangle> getMapCollision() {
@@ -172,13 +173,17 @@ public class LevelScreen implements Screen {
         if (this.gameState == GameState.RUNNING) {
             Gdx.input.setInputProcessor(runningInput);
         } else if (this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK) {
+            if(this.levelStage.getSelfPlayer() != null){
+                this.levelStage.getSelfPlayer().stopMovement();
+            }
             Gdx.input.setInputProcessor(uiStage);
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        levelStage.getViewport().update(width, height, true);
+        levelStage.getViewport().update(width, height, false);
+        levelStage.getCamera().position.set(levelStage.getSelfPlayer().getX(), levelStage.getSelfPlayer().getY(), 0);
         uiStage.getViewport().update(width, height, true);
         hudStage.getViewport().update(width, height, true);
     }
