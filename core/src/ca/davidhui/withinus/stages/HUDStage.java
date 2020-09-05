@@ -3,6 +3,7 @@ package ca.davidhui.withinus.stages;
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.WithinUs;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -12,8 +13,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class HUDStage extends Stage {
     private final WithinUs game;
 
-    public HUDStage(Viewport viewport, WithinUs game) {
-        super(viewport);
+    public HUDStage(Viewport viewport, WithinUs game, SpriteBatch batch) {
+        super(viewport, batch);
         this.game = game;
         this.initHUD();
     }

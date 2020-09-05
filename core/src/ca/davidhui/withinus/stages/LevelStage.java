@@ -34,13 +34,14 @@ public class LevelStage extends Stage {
     @Override
     public void act(float delta) {
         super.act(delta);
+        // Check for tasks that have been completed and not removed
         for(Task levelTask : mapTasks){
-            if(levelTask.completed && !levelTask.removed){
+            if(levelTask.getCompleted() && !levelTask.getRemoved()){
                 // Remove the actor and cached rectangle
                 levelTask.getTaskActor().remove();
                 this.collisionRectangles.remove(levelTask.boundRectangle);
                 this.boundScreen.getUiStage().close();
-                levelTask.removed = true;
+                levelTask.setRemoved();
             }
         }
     }

@@ -100,11 +100,11 @@ public class LevelScreen implements Screen {
     }
 
     private void initUIStage() {
-        uiStage = new UIStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this);
+        uiStage = new UIStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this, this.spriteBatch);
     }
 
     private void initHUDStage() {
-        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game);
+        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game, this.spriteBatch);
     }
 
     private List<Rectangle> getMapCollision() {
@@ -201,6 +201,7 @@ public class LevelScreen implements Screen {
         }
         levelStage.dispose();
         uiStage.dispose();
+        hudStage.dispose();
         levelMapRenderer.dispose();
         levelMap.dispose();
         mapBk.dispose();

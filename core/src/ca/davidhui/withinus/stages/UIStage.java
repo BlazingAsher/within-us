@@ -4,6 +4,7 @@ import ca.davidhui.withinus.WithinUs;
 import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.screens.LevelScreen;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -13,8 +14,8 @@ public class UIStage extends Stage{
     private final LevelScreen boundScreen;
 
     private Group currentView;
-    public UIStage(Viewport viewport, WithinUs game, LevelScreen boundScreen){
-        super(viewport);
+    public UIStage(Viewport viewport, WithinUs game, LevelScreen boundScreen, SpriteBatch batch){
+        super(viewport, batch);
         this.game = game;
         this.boundScreen = boundScreen;
     }
@@ -23,10 +24,6 @@ public class UIStage extends Stage{
         this.addActor(newView);
         this.currentView = newView;
     }
-
-//    public void onComplete() {
-//
-//    }
 
     public void close() {
         System.out.println("switching back to main stage");

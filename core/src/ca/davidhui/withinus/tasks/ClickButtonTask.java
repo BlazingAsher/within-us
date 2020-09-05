@@ -10,12 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class ClickButtonTask extends TaskGroup {
-    private final WithinUs game;
-    private final Task boundTask;
 
     public ClickButtonTask(WithinUs game, final Task boundTask) {
-        this.game = game;
-        this.boundTask = boundTask;
+        super(game, boundTask);
         this.setBounds(0, 0, GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT);
         this.addListener(new ClickListener(){
             @Override
