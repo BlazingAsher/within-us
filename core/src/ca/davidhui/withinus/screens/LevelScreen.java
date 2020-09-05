@@ -7,8 +7,10 @@ import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.enums.TaskType;
 import ca.davidhui.withinus.models.Task;
+import ca.davidhui.withinus.stages.HUDStage;
 import ca.davidhui.withinus.stages.LevelStage;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,7 +23,11 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -47,6 +53,10 @@ public class LevelScreen implements Screen {
 
     private GameState gameState;
 
+    private HUDStage hudStage;
+
+    private final InputMultiplexer runningInput = new InputMultiplexer();
+
     public LevelScreen(final WithinUs game){
         this.game = game;
 
@@ -62,7 +72,7 @@ public class LevelScreen implements Screen {
         player = new PlayerActor(new Texture("badlogic.jpg"), levelStage, this, PlayerType.CREWMATE);
         levelStage.setSelfPlayer(player);
 
-        mapBk = new Texture("images/testbk.png");
+//        mapBk = new Texture("images/testbk.png");
 
         bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient_piano.mp3"));
         bgMusic.setLooping(true);
@@ -70,6 +80,11 @@ public class LevelScreen implements Screen {
 
         initLevelStage();
         initUIStage();
+        initHUDStage();
+
+        runningInput.addProcessor(hudStage);
+        runningInput.addProcessor(levelStage);
+        Gdx.input.setInputProcessor(runningInput);
 
         this.gameState = GameState.RUNNING;
 
@@ -89,6 +104,10 @@ public class LevelScreen implements Screen {
 
     private void initUIStage() {
         uiStage = new Stage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT));
+    }
+
+    private void initHUDStage() {
+        hudStage = new HUDStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), game);
     }
 
     private List<Rectangle> getMapCollision() {
@@ -119,7 +138,6 @@ public class LevelScreen implements Screen {
         return this.levelMap;
     }
 
-
     @Override
     public void show() {
 
@@ -134,11 +152,14 @@ public class LevelScreen implements Screen {
         levelStage.act(Gdx.graphics.getDeltaTime());
         levelStage.draw();
 
+        hudStage.act(Gdx.graphics.getDeltaTime());
+        hudStage.draw();
+
         uiStage.act(Gdx.graphics.getDeltaTime());
         uiStage.draw();
 
         if(this.gameState == GameState.RUNNING){
-            Gdx.input.setInputProcessor(levelStage);
+            Gdx.input.setInputProcessor(runningInput);
         }
         else if(this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK){
             Gdx.input.setInputProcessor(uiStage);

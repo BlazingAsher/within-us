@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.title = "Within Us";
 		config.width = 1280;
 		config.height = 720;
+//		config.useHDPI = true;
 		new LwjglApplication(new WithinUs(), config);
 	}
 }
