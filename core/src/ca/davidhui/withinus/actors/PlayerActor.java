@@ -24,6 +24,7 @@ public class PlayerActor extends Actor {
     private PlayerType playerType;
 
     private Interactable currentInteractableOverlap; // Stores the current actor
+    private PlayerActor currentPlayerOverlap;
 
     private int xDirection = 0;
     private int yDirection = 0;
@@ -164,8 +165,8 @@ public class PlayerActor extends Actor {
     }
 
     private void checkTaskCollision() {
-        for(Task levelTask : boundLevelStage.getMapTasks()){
-            if(getRectangle().overlaps(levelTask.boundRectangle) && !levelTask.isComplete()){
+        for (Task levelTask : boundLevelStage.getMapTasks()) {
+            if (getRectangle().overlaps(levelTask.boundRectangle) && !levelTask.isComplete()) {
                 //System.out.println("task!");
                 this.currentInteractableOverlap = levelTask;
                 return;
@@ -175,11 +176,12 @@ public class PlayerActor extends Actor {
     }
 
     private void checkPlayerCollision() {
-        for(PlayerActor otherPlayer : this.boundLevelStage.getPlayers()){
-            if(otherPlayer != this){
-                if(this.getRectangle().overlaps(otherPlayer.getRectangle())){
-                    if(playerType == PlayerType.CREWMATE && otherPlayer.getPlayerState() == PlayerState.DEAD){
+        for (PlayerActor otherPlayer : this.boundLevelStage.getPlayers()) {
+            if (otherPlayer != this) {
+                if (this.getRectangle().overlaps(otherPlayer.getRectangle())) {
+                    if (playerType == PlayerType.CREWMATE && otherPlayer.getPlayerState() == PlayerState.DEAD) {
                         System.out.println("overlap with other!");
+                        currentPlayerOverlap = otherPlayer;
                     }
 
                 }
@@ -190,6 +192,10 @@ public class PlayerActor extends Actor {
 
     public Interactable getCurrentInteractableOverlap() {
         return currentInteractableOverlap;
+    }
+
+    public PlayerActor getCurrentPlayerOverlap() {
+        return currentPlayerOverlap;
     }
 
     @Override

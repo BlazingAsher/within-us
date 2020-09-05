@@ -18,7 +18,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class HUDStage extends Stage {
     private final WithinUs game;
     private InteractButton useButton;
-    private PlayerActor playerActor;
+    private TextButton reportButton;
+    private final PlayerActor playerActor;
 
     public HUDStage(Viewport viewport, WithinUs game, SpriteBatch batch, PlayerActor playerActor) {
         super(viewport, batch);
@@ -28,22 +29,21 @@ public class HUDStage extends Stage {
     }
 
     private void initHUD() {
-        TextButton report = new TextButton("Report", game.skin, "round") {
+        reportButton = new TextButton("Report", game.skin, "round") {
             @Override
             public void act(float delta) {
                 super.act(delta);
 //                System.out.println("per frame");
             }
         };
-        report.setPosition(GameConstants.VIEWPORT_WIDTH - 200, 50);
-        report.addListener(new ClickListener() {
+        reportButton.setPosition(GameConstants.VIEWPORT_WIDTH - 200, 50);
+        reportButton.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                System.out.println("clicked");
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("reporting");
             }
         });
-        this.addActor(report);
+        this.addActor(reportButton);
 
         useButton = new InteractButton(game.skin, "round");
         useButton.setPosition(GameConstants.VIEWPORT_WIDTH - 200, 100);
@@ -66,5 +66,8 @@ public class HUDStage extends Stage {
     private void setUIStatusPerFrame() {
         Interactable interactable = playerActor.getCurrentInteractableOverlap();
         useButton.setDisabled(interactable == null);
+
+        PlayerActor deadPlayer = playerActor.getCurrentPlayerOverlap();
+        reportButton.setDisabled(deadPlayer == null);
     }
 }
