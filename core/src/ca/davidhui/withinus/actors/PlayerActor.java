@@ -119,7 +119,7 @@ public class PlayerActor extends Actor {
     }
 
     /**
-     * Moves the player as long as x/yDirection is setee
+     * Moves the player as long as x/yDirection is set
      *
      * @param delta time since last tick
      */
@@ -164,10 +164,25 @@ public class PlayerActor extends Actor {
     }
 
     private void checkTaskCollision() {
-        for (Task levelTask : boundLevelStage.getMapTasks()) {
-            if (getRectangle().overlaps(levelTask.boundRectangle)) {
-//                System.out.println("task!");
+        for(Task levelTask : boundLevelStage.getMapTasks()){
+            if(getRectangle().overlaps(levelTask.boundRectangle) && !levelTask.isComplete()){
+                //System.out.println("task!");
                 this.currentInteractableOverlap = levelTask;
+                return;
+            }
+        }
+        this.currentInteractableOverlap = null;
+    }
+
+    private void checkPlayerCollision() {
+        for(PlayerActor otherPlayer : this.boundLevelStage.getPlayers()){
+            if(otherPlayer != this){
+                if(this.getRectangle().overlaps(otherPlayer.getRectangle())){
+                    if(playerType == PlayerType.CREWMATE && otherPlayer.getPlayerState() == PlayerState.DEAD){
+                        System.out.println("overlap with other!");
+                    }
+
+                }
 
             }
         }
@@ -183,6 +198,7 @@ public class PlayerActor extends Actor {
 
         processMovement(delta);
         checkTaskCollision();
+        checkPlayerCollision();
     }
 
     public void setxDirection(int direction) {
@@ -199,5 +215,13 @@ public class PlayerActor extends Actor {
 
     public int getyDirection() {
         return yDirection;
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
+    }
+
+    public PlayerType getPlayerType() {
+        return playerType;
     }
 }

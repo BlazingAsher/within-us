@@ -68,7 +68,7 @@ public class Task extends Interactable {
         this.completed = true;
     }
 
-    public boolean getCompleted(){
+    public boolean isComplete(){
         return this.completed;
     }
 

@@ -36,10 +36,9 @@ public class LevelStage extends Stage {
         super.act(delta);
         // Check for tasks that have been completed and not removed
         for(Task levelTask : mapTasks){
-            if(levelTask.getCompleted() && !levelTask.getRemoved()){
+            if(levelTask.isComplete() && !levelTask.getRemoved()){
                 // Remove the actor and cached rectangle
                 levelTask.getTaskActor().remove();
-                this.collisionRectangles.remove(levelTask.boundRectangle);
                 this.boundScreen.getUiStage().close();
                 levelTask.setRemoved();
             }
@@ -61,5 +60,9 @@ public class LevelStage extends Stage {
 
     public List<Rectangle> getCollisionRectangles() {
         return collisionRectangles;
+    }
+
+    public List<PlayerActor> getPlayers() {
+        return players;
     }
 }
