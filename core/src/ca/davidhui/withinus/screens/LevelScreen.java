@@ -170,6 +170,7 @@ public class LevelScreen implements Screen {
     public void resize(int width, int height) {
         levelStage.getViewport().update(width, height, true);
         uiStage.getViewport().update(width, height, true);
+        hudStage.getViewport().update(width, height, true);
     }
 
     @Override
