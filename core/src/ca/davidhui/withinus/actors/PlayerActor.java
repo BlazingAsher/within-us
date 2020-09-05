@@ -25,6 +25,7 @@ public class PlayerActor extends Actor {
 
     private Interactable currentInteractableOverlap; // Stores the current actor
     private PlayerActor currentPlayerOverlap;
+    private PlayerActor currentKillableOverlap;
 
     private int xDirection = 0;
     private int yDirection = 0;
@@ -176,18 +177,34 @@ public class PlayerActor extends Actor {
     }
 
     private void checkPlayerCollision() {
+        boolean hasOverlap = false;
+        boolean hasKillable = false;
+
         for (PlayerActor otherPlayer : this.boundLevelStage.getPlayers()) {
             if (otherPlayer != this) {
                 if (this.getRectangle().overlaps(otherPlayer.getRectangle())) {
-                    if (playerType == PlayerType.CREWMATE && otherPlayer.getPlayerState() == PlayerState.DEAD) {
+                    if (otherPlayer.getPlayerState() == PlayerState.DEAD) {
                         System.out.println("overlap with other!");
                         currentPlayerOverlap = otherPlayer;
+                        hasOverlap = true;
                     }
-
+                    if(playerType == PlayerType.IMPOSTOR && otherPlayer.getPlayerState() == PlayerState.ALIVE){
+                        System.out.println("can kill!");
+                        currentKillableOverlap = otherPlayer;
+                        hasKillable = true;
+                    }
                 }
 
             }
         }
+
+        if(!hasOverlap){
+            this.currentPlayerOverlap = null;
+        }
+        if(!hasKillable){
+            this.currentKillableOverlap = null;
+        }
+
     }
 
     public Interactable getCurrentInteractableOverlap() {
@@ -198,6 +215,10 @@ public class PlayerActor extends Actor {
         return currentPlayerOverlap;
     }
 
+    public PlayerActor getCurrentKillableOverlap() {
+        return currentKillableOverlap;
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -205,6 +226,9 @@ public class PlayerActor extends Actor {
         processMovement(delta);
         checkTaskCollision();
         checkPlayerCollision();
+
+        System.out.println(currentInteractableOverlap);
+        System.out.println(currentKillableOverlap);
     }
 
     public void setxDirection(int direction) {
