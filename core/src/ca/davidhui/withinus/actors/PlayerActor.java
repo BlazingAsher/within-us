@@ -108,6 +108,7 @@ public class PlayerActor extends Actor {
             Task selectedTask = (Task) this.currentInteractableOverlap;
             System.out.println("interacting with " + selectedTask.taskType);
             this.boundLevelScreen.setGameState(GameState.DOING_TASK);
+            this.boundLevelScreen.getUiStage().setView(selectedTask.getUiGroup());
         }
     }
 
@@ -166,7 +167,7 @@ public class PlayerActor extends Actor {
     private void checkTaskCollision() {
         for(Task levelTask : boundLevelStage.getMapTasks()){
             if(getRectangle().overlaps(levelTask.boundRectangle)){
-                System.out.println("task!");
+                //System.out.println("task!");
                 this.currentInteractableOverlap = levelTask;
 
             }

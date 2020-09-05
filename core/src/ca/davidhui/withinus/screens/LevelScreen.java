@@ -9,6 +9,7 @@ import ca.davidhui.withinus.enums.TaskType;
 import ca.davidhui.withinus.models.Task;
 import ca.davidhui.withinus.stages.HUDStage;
 import ca.davidhui.withinus.stages.LevelStage;
+import ca.davidhui.withinus.stages.UIStage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -42,7 +43,7 @@ public class LevelScreen implements Screen {
     private Music bgMusic;
 
     private LevelStage levelStage;
-    private Stage uiStage;
+    private UIStage uiStage;
     private TiledMap levelMap;
 
     private OrthogonalTiledMapRenderer levelMapRenderer;
@@ -61,7 +62,7 @@ public class LevelScreen implements Screen {
 
         initLevelMap();
 
-        levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks());
+        levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), this);
 
         Gdx.input.setInputProcessor(levelStage);
 
@@ -99,7 +100,7 @@ public class LevelScreen implements Screen {
     }
 
     private void initUIStage() {
-        uiStage = new Stage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT));
+        uiStage = new UIStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this);
     }
 
     private void initHUDStage() {
@@ -123,7 +124,7 @@ public class LevelScreen implements Screen {
 
         for (MapObject object : layer.getObjects()){
             if(object instanceof RectangleMapObject){
-                temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle()));
+                temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
             }
 
         }
@@ -136,6 +137,10 @@ public class LevelScreen implements Screen {
 
     public void setGameState(GameState newState){
         this.gameState = newState;
+    }
+
+    public UIStage getUiStage() {
+        return uiStage;
     }
 
     @Override
