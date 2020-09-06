@@ -139,7 +139,13 @@ public class LevelScreen implements Screen {
 
         for (MapObject object : layer.getObjects()) {
             if (object instanceof RectangleMapObject && object.getProperties().get("type").equals("TASK")) {
-                temp.add(new Task(TaskType.valueOf(object.getProperties().get("taskName", String.class)), ((RectangleMapObject) object).getRectangle(), this.game));
+
+                temp.add(
+                        new Task(
+                                TaskType.valueOf(object.getProperties().get("taskName", String.class)),
+                                ((RectangleMapObject) object).getRectangle(), this.game
+                        )
+                );
             }
 
         }
