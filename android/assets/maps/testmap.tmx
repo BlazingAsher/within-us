@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="15">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="17">
  <tileset firstgid="1" source="testmapts.tsx"/>
  <layer id="1" name="Tile Layer 1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt1UEOgyAARFEv0bN4/5u5qWkkkYgFpw3vJWy6nA92WQAAAAAAAAAAAAD+y/o+5KzFIedqA72eUe57tnuth1b9lDuW25bfsrNDP3aGnFfjYZzWFt8e2t3dtfxdh/u8k/Ge3ri2sx5Hv9KFul7b6zKGt5KR+G+ZqU9y39btZ2jSehfTfWZ6K7v02/ANq7NzTvq+6/GRbrB3mL1PusHs+5eu3lF9MtLb63J0ZyM9npN+E1ocjd5Ukz4S916bPkb00qWvqy18vwAAAAAAAAAAAAAAAAAAAACgbgOCp0N8
+   eJzt1UEKgzAARFEv0U0v4v1v1k2lGDAYTRxK3oNsSlfzjS4LAAAAAAAAAAAAwH9Zv4ectTjknG2g1zPKfY92r/XQqp9yx3Lb8l12dOjHzpDzajyM09ri7qHd1V3L33W4zj0Z7+mNazvrsddj63fjf2nX6054L43hW5GR+LbM1Ce5b+v2MzRpfRbTfWa6K5v03fAOq7NzTvp51+Mn3WDrMHufdIPZ9y+dfUb1yUhvr8velY30eE76TmixN3pTTfpIPPfa9DGily59nW3h/QUAAAAAAAAAAAAAAAAAAAAAdR8fX0Ob
   </data>
  </layer>
  <layer id="2" name="Tile Layer 2" width="100" height="100">
@@ -11,21 +11,33 @@
    eJzt20FO3DAYgNFILLkOPUJZlK7bBc0NKEeas+KpGBRZTrAT27Hoe9KviBkhRflkJ8yIaQIAAAAAAAAAAAAAAAAAAICv4SHMt7NPgg/fwzyefRJ8+BXm94Hf/xHmKczPOqfDQc9h/oSZzz4R/nkJ8zfM69knAgD/qcv73NwXDHXFLTiHDuPQYhxajEOLcWgxDi3GocU4tBiLFuPQYhxajMM9YyxatDFHxxxatFPawz7VzjyV9dCirbjHVhMd2psTs0aP9nJ62KP6yF0bWvTxWQ/roq+cHvSz1UOL/lI97FHnSfXwPxXt3L1PyloLPeq7iyZFjz62Gizp0U+8PlLrJb7+evSV6nGZ9Ohp7R6S+oxdj/py7uNXa/uUHsflXP+l2x6lR30lHa5uf3fr0U7Os9TVskV8zP1+kDJrTZafSenR3tb6uEQ/z4mjHn3ELeLrP0161JazRy2t9XA/P+6zFqn39Kiv5H6R02Oa9NjrSItlj9RrWtST0+J27WN6HFe6LuLn3SU99tuzR1kf7W09Q5WOHvvtXRd6tLHW4ig99kn1qEWPcm+dpXDe
   </data>
  </layer>
- <objectgroup id="3" name="Object Layer 1">
+ <objectgroup id="3" name="Interactables">
   <object id="3" x="1566.67" y="1288.67" width="66" height="86.6667">
    <properties>
     <property name="taskName" value="TREE"/>
-    <property name="type" value="task"/>
+    <property name="type" value="TASK"/>
    </properties>
   </object>
   <object id="5" x="2072.67" y="1340.67" width="112" height="102.667">
    <properties>
     <property name="taskName" value="WATERFALL"/>
-    <property name="type" value="task"/>
+    <property name="type" value="TASK"/>
+   </properties>
+  </object>
+  <object id="15" x="1757.67" y="1214.67" width="36" height="34.3333">
+   <properties>
+    <property name="nextIDs" value="16"/>
+    <property name="type" value="VENT"/>
+   </properties>
+  </object>
+  <object id="16" x="2111.33" y="1216" width="32.3333" height="32">
+   <properties>
+    <property name="nextIDs" value="15"/>
+    <property name="type" value="VENT"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="4" name="Object Layer 2">
+ <objectgroup id="4" name="Collision">
   <object id="10" x="1668" y="1569.33" width="346.667" height="28"/>
   <object id="14" x="554.667" y="2606.67" width="246.667" height="157.333"/>
  </objectgroup>

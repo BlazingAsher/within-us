@@ -8,6 +8,7 @@ import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.listeners.PlayerInputListener;
 import ca.davidhui.withinus.models.Interactable;
 import ca.davidhui.withinus.models.Task;
+import ca.davidhui.withinus.models.Vent;
 import ca.davidhui.withinus.screens.LevelScreen;
 import ca.davidhui.withinus.stages.LevelStage;
 import com.badlogic.gdx.graphics.Texture;
@@ -36,7 +37,7 @@ public class PlayerActor extends Actor {
         this.boundLevelScreen = boundLevelScreen;
 
         this.playerType = playerType;
-        this.playerState = PlayerState.ALIVE;
+        this.playerState = PlayerState.DEAD;
 
         setBounds(getX(), getY(), playerTexture.getWidth(), playerTexture.getHeight());
 
@@ -62,6 +63,7 @@ public class PlayerActor extends Actor {
         int direction = isX ? xDirection : yDirection;
 
         desiredAmount = Math.abs(desiredAmount);
+        System.out.println("hello");
 
         // TODO: This might be a bit imprecise going up by 1
         for (int i = 0; i <= desiredAmount; i++) {
@@ -74,16 +76,35 @@ public class PlayerActor extends Actor {
             }
 
             // check if we collided with anything
-            for (Rectangle collisionRectangle : boundLevelStage.getCollisionRectangles()) {
-                // We did, so move back and report the amount we moved
-                if (collisionRectangle.overlaps(getRectangle())) {
-                    if (isX) {
-                        setX(getX() - direction);
-                    } else {
-                        setY(getY() - direction);
+            // only check if player is alive
+            if(this.playerState == PlayerState.ALIVE){
+                for (Rectangle collisionRectangle : boundLevelStage.getCollisionRectangles()) {
+                    // We did, so move back and report the amount we moved
+                    if (collisionRectangle.overlaps(getRectangle())) {
+                        if (isX) {
+                            setX(getX() - direction);
+                        } else {
+                            setY(getY() - direction);
+                        }
+                        return (i - 1) * direction;
                     }
+                }
+            }
+
+
+            // make sure player is in map bounds
+            if (isX) {
+                if(getX() < 0 || getX() > this.boundLevelStage.getBoundScreen().getMapWidth()){
+                    setX(getX() - direction);
                     return (i - 1) * direction;
                 }
+
+            } else {
+                if(getY() < 0 || getY() > this.boundLevelStage.getBoundScreen().getMapHeight()){
+                    setY(getY() - direction);
+                    return (i - 1) * direction;
+                }
+
             }
 
         }
@@ -112,6 +133,18 @@ public class PlayerActor extends Actor {
         }
     }
 
+    public void processKill() {
+        if(this.currentKillableOverlap == null || this.playerType != PlayerType.IMPOSTOR){
+            return;
+        }
+
+        this.currentKillableOverlap.beKilled();
+    }
+
+    public void beKilled() {
+        this.playerState = PlayerState.DEAD;
+    }
+
     private float movePlayerX(float desiredAmount) {
         return movePlayer(desiredAmount, true);
     }
@@ -130,7 +163,7 @@ public class PlayerActor extends Actor {
             float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
             // If player is past the padding, move camera too
-            if (getX() < boundLevelStage.getCamera().position.x - boundLevelStage.getCamera().viewportWidth / 2 + GameConstants.CAMERA_PLAYER_PADDING) {
+            if (getX() < boundLevelStage.getCamera().position.x - boundLevelStage.getCamera().viewportWidth / 2 + GameConstants.CAMERA_PLAYER_PADDINGX) {
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
             }
         }
@@ -139,7 +172,7 @@ public class PlayerActor extends Actor {
         if (xDirection == 1) {
             float permittedXMovement = movePlayerX(Utils.getAdjustedMovementSpeed() * delta);
 
-            if (getX() > boundLevelStage.getCamera().position.x + boundLevelStage.getCamera().viewportWidth / 2 - playerTexture.getWidth() - GameConstants.CAMERA_PLAYER_PADDING) {
+            if (getX() > boundLevelStage.getCamera().position.x + boundLevelStage.getCamera().viewportWidth / 2 - playerTexture.getWidth() - GameConstants.CAMERA_PLAYER_PADDINGX) {
                 boundLevelStage.getCamera().translate(permittedXMovement, 0, 0);
             }
         }
@@ -148,7 +181,7 @@ public class PlayerActor extends Actor {
         if (yDirection == 1) {
             float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
-            if (getY() > boundLevelStage.getCamera().position.y + boundLevelStage.getCamera().viewportHeight / 2 - playerTexture.getHeight() - GameConstants.CAMERA_PLAYER_PADDING) {
+            if (getY() > boundLevelStage.getCamera().position.y + boundLevelStage.getCamera().viewportHeight / 2 - playerTexture.getHeight() - GameConstants.CAMERA_PLAYER_PADDINGY) {
                 boundLevelStage.getCamera().translate(0, permittedYMovement, 0);
             }
         }
@@ -157,7 +190,7 @@ public class PlayerActor extends Actor {
         if (yDirection == -1) {
             float permittedYMovement = movePlayerY(Utils.getAdjustedMovementSpeed() * delta);
 
-            if (getY() < boundLevelStage.getCamera().position.y - boundLevelStage.getCamera().viewportHeight / 2 + GameConstants.CAMERA_PLAYER_PADDING) {
+            if (getY() < boundLevelStage.getCamera().position.y - boundLevelStage.getCamera().viewportHeight / 2 + GameConstants.CAMERA_PLAYER_PADDINGY) {
                 boundLevelStage.getCamera().translate(0, permittedYMovement, 0);
             }
         }
@@ -173,6 +206,15 @@ public class PlayerActor extends Actor {
                 return;
             }
         }
+        if(this.playerType == PlayerType.IMPOSTOR){
+            for (Vent levelVent : boundLevelStage.getMapVents().values()) {
+                if (getRectangle().overlaps(levelVent.boundRectangle)) {
+                    //System.out.println("task!");
+                    this.currentInteractableOverlap = levelVent;
+                    return;
+                }
+            }
+        }
         this.currentInteractableOverlap = null;
     }
 
@@ -183,12 +225,12 @@ public class PlayerActor extends Actor {
         for (PlayerActor otherPlayer : this.boundLevelStage.getPlayers()) {
             if (otherPlayer != this) {
                 if (this.getRectangle().overlaps(otherPlayer.getRectangle())) {
-                    if (otherPlayer.getPlayerState() == PlayerState.DEAD) {
+                    if (this.playerState == PlayerState.ALIVE && otherPlayer.getPlayerState() == PlayerState.DEAD) {
                         System.out.println("overlap with other!");
                         currentPlayerOverlap = otherPlayer;
                         hasOverlap = true;
                     }
-                    if(playerType == PlayerType.IMPOSTOR && otherPlayer.getPlayerState() == PlayerState.ALIVE){
+                    if(this.playerState == PlayerState.ALIVE && this.playerType == PlayerType.IMPOSTOR && otherPlayer.getPlayerState() == PlayerState.ALIVE){
                         System.out.println("can kill!");
                         currentKillableOverlap = otherPlayer;
                         hasKillable = true;

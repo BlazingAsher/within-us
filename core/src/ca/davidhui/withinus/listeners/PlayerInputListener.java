@@ -1,6 +1,7 @@
 package ca.davidhui.withinus.listeners;
 
 import ca.davidhui.withinus.actors.PlayerActor;
+import ca.davidhui.withinus.enums.PlayerType;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -30,6 +31,10 @@ public class PlayerInputListener extends InputListener {
         if(keycode == Input.Keys.E){
             System.out.println("using");
             boundPlayer.processInteract();
+        }
+        if(keycode == Input.Keys.Q){
+            System.out.println("killing");
+            boundPlayer.processKill();
         }
         return true;
     }

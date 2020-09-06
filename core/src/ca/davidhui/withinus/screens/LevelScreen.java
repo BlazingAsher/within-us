@@ -3,10 +3,13 @@ package ca.davidhui.withinus.screens;
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.WithinUs;
 import ca.davidhui.withinus.actors.PlayerActor;
+import ca.davidhui.withinus.actors.VentActor;
 import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.enums.TaskType;
+import ca.davidhui.withinus.models.Interactable;
 import ca.davidhui.withinus.models.Task;
+import ca.davidhui.withinus.models.Vent;
 import ca.davidhui.withinus.stages.HUDStage;
 import ca.davidhui.withinus.stages.LevelStage;
 import ca.davidhui.withinus.stages.UIStage;
@@ -20,6 +23,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -30,7 +34,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LevelScreen implements Screen {
 
@@ -46,6 +52,9 @@ public class LevelScreen implements Screen {
     private LevelStage levelStage;
     private UIStage uiStage;
     private TiledMap levelMap;
+    private MapProperties levelMapProperties;
+    private int mapWidth;
+    private int mapHeight;
 
     private OrthogonalTiledMapRenderer levelMapRenderer;
 
@@ -63,7 +72,7 @@ public class LevelScreen implements Screen {
 
         initLevelMap();
 
-        levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), this);
+        levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), getMapVents(), this);
 
         Gdx.input.setInputProcessor(levelStage);
 
@@ -92,6 +101,11 @@ public class LevelScreen implements Screen {
         levelMap = this.game.getAssetManager().get("maps/testmap.tmx", TiledMap.class);
         levelMapRenderer = new OrthogonalTiledMapRenderer(levelMap, 1, this.spriteBatch);
         levelMapRenderer.setView(this.levelCamera);
+
+        this.levelMapProperties = this.levelMap.getProperties();
+        this.mapWidth = this.getLevelMapProperties().get("width", Integer.class) * this.getLevelMapProperties().get("tilewidth", Integer.class);
+        this.mapHeight = this.getLevelMapProperties().get("height", Integer.class) * this.getLevelMapProperties().get("tileheight", Integer.class);
+
     }
 
     private void initLevelStage() {
@@ -124,8 +138,24 @@ public class LevelScreen implements Screen {
         List<Task> temp = new ArrayList<>();
 
         for (MapObject object : layer.getObjects()) {
-            if (object instanceof RectangleMapObject) {
-                temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
+            if (object instanceof RectangleMapObject && object.getProperties().get("type").equals("TASK")) {
+                temp.add(new Task(TaskType.valueOf(object.getProperties().get("taskName", String.class)), ((RectangleMapObject) object).getRectangle(), this.game));
+            }
+
+        }
+        return temp;
+    }
+
+    private Map<Integer, Vent> getMapVents() {
+        MapLayer layer = levelMap.getLayers().get(2);
+        Map<Integer, Vent> temp = new HashMap<>();
+
+        for (MapObject object : layer.getObjects()) {
+            if (object instanceof RectangleMapObject && object.getProperties().get("type", String.class).equals("VENT")) {
+                //temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
+                Integer ventID = object.getProperties().get("id", Integer.class);
+                temp.put(ventID, new Vent(((RectangleMapObject) object).getRectangle(), ventID));
+                // TODO: Build the vent network
             }
 
         }
@@ -148,7 +178,19 @@ public class LevelScreen implements Screen {
         return hudStage;
     }
 
-    ;
+    public MapProperties getLevelMapProperties() {
+        return levelMapProperties;
+    }
+
+    public int getMapWidth() {
+        System.out.println(this.mapWidth);
+        return this.mapWidth;
+    }
+
+    public int getMapHeight() {
+        System.out.println(this.mapHeight);
+        return this.mapHeight;
+    }
 
     @Override
     public void show() {
