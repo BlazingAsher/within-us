@@ -31,6 +31,7 @@ public class WithinUs extends Game {
 		assetManager.load("maps/testmap.tmx", TiledMap.class);
 		assetManager.load("skins/shade/skin/uiskin.json", Skin.class);
 		assetManager.load("images/ClickButtonTask.png", Texture.class);
+		assetManager.load("images/graphics/VentArrow.png", Texture.class);
 		assetManager.finishLoading();
 		this.skin = assetManager.get("skins/shade/skin/uiskin.json");
 //		this.setScreen(new LevelScreen(this));

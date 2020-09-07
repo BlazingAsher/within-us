@@ -2,6 +2,7 @@ package ca.davidhui.withinus.actors;
 
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.Utils;
+import ca.davidhui.withinus.WithinUs;
 import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerState;
 import ca.davidhui.withinus.enums.PlayerType;
@@ -14,7 +15,9 @@ import ca.davidhui.withinus.stages.LevelStage;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import java.util.HashSet;
 
 public class PlayerActor extends Actor {
     private final Texture playerTexture; // TODO: Change this to an animation!
@@ -28,10 +31,15 @@ public class PlayerActor extends Actor {
     private PlayerActor currentPlayerOverlap;
     private PlayerActor currentKillableOverlap;
 
+    private HashSet<VentArrowActor> boundVentArrowActors;
+
     private int xDirection = 0;
     private int yDirection = 0;
 
-    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType) {
+    private WithinUs game;
+
+    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType, WithinUs game) {
+        this.game = game;
         this.playerTexture = img;
         this.boundLevelStage = boundLevelStage;
         this.boundLevelScreen = boundLevelScreen;
@@ -42,6 +50,10 @@ public class PlayerActor extends Actor {
         setBounds(getX(), getY(), playerTexture.getWidth(), playerTexture.getHeight());
 
         addListener(new PlayerInputListener(this));
+
+        if(playerType == PlayerType.IMPOSTOR){
+            this.boundVentArrowActors = new HashSet<>();
+        }
 
     }
 
@@ -63,7 +75,7 @@ public class PlayerActor extends Actor {
         int direction = isX ? xDirection : yDirection;
 
         desiredAmount = Math.abs(desiredAmount);
-        System.out.println("hello");
+        //System.out.println("hello");
 
         // TODO: This might be a bit imprecise going up by 1
         for (int i = 0; i <= desiredAmount; i++) {
@@ -131,6 +143,55 @@ public class PlayerActor extends Actor {
             this.boundLevelScreen.setGameState(GameState.DOING_TASK);
             this.boundLevelScreen.getUiStage().setView(selectedTask.getUiGroup());
         }
+        else if(this.currentInteractableOverlap instanceof Vent){
+            Vent selectedVent = (Vent) this.currentInteractableOverlap;
+            System.out.println("interacting with " + selectedVent);
+            drawVentsUI(selectedVent);
+        }
+    }
+
+    public void drawVentsUI(Vent baseVent) {
+//        System.out.println(Arrays.toString(baseVent.nextNodes));
+        Vector2 baseVentRectCenter = new Vector2();
+        baseVent.boundRectangle.getCenter(baseVentRectCenter);
+//        System.out.println("current center");
+//        System.out.println(baseVentRectCenter);
+
+        for(int nextNodeID : baseVent.nextNodes){
+//            System.out.println("next vent-------------");
+//            System.out.println(this.boundLevelStage.getMapVents().get(nextNodeID));
+            Vent potentialNext = this.boundLevelStage.getMapVents().get(nextNodeID);
+            Vector2 potentialNextRectCenter = new Vector2();
+            potentialNext.boundRectangle.getCenter(potentialNextRectCenter);
+//            System.out.println("next center");
+//            System.out.println(potentialNextRectCenter);
+
+            double degFromOriginVent = Math.toDegrees(Math.atan2(potentialNextRectCenter.y - baseVentRectCenter.y, potentialNextRectCenter.x - baseVentRectCenter.x));
+
+            Vector2 nextPointerBounds = new Vector2();
+            nextPointerBounds.x = (float) (baseVentRectCenter.x + Math.cos(Math.toRadians(degFromOriginVent))*50);
+            nextPointerBounds.y = (float) (baseVentRectCenter.y + Math.sin(Math.toRadians(degFromOriginVent))*50);
+//            System.out.println("pos degrees");
+//            System.out.println(degFromOriginVent);
+//            System.out.println("pointer origin");
+//            System.out.println(nextPointerBounds);
+            VentArrowActor nextPointer = new VentArrowActor(this, this.game, nextPointerBounds.x, nextPointerBounds.y);
+            nextPointer.moveToCenter();
+
+
+            nextPointer.rotateBy((float) degFromOriginVent);
+            this.boundLevelStage.addActor(nextPointer);
+            this.boundVentArrowActors.add(nextPointer);
+//            System.out.println("------------------------");
+
+        }
+    }
+
+    public void clearVentArrows() {
+        for(VentArrowActor temp : this.boundVentArrowActors){
+            temp.remove();
+        }
+        this.boundVentArrowActors.clear();
     }
 
     public void processKill() {
@@ -269,8 +330,8 @@ public class PlayerActor extends Actor {
         checkTaskCollision();
         checkPlayerCollision();
 
-        System.out.println(currentInteractableOverlap);
-        System.out.println(currentKillableOverlap);
+        //System.out.println(currentInteractableOverlap);
+        //System.out.println(currentKillableOverlap);
     }
 
     public void setxDirection(int direction) {

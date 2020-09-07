@@ -74,16 +74,16 @@ public class LevelScreen implements Screen {
 
         levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), getMapVents(), this);
 
-        Gdx.input.setInputProcessor(levelStage);
+        //Gdx.input.setInputProcessor(levelStage);
 
-        player = new PlayerActor(new Texture("badlogic.jpg"), levelStage, this, PlayerType.CREWMATE);
+        player = new PlayerActor(new Texture("badlogic.jpg"), levelStage, this, PlayerType.IMPOSTOR, game);
         levelStage.setSelfPlayer(player);
 
 //        mapBk = new Texture("images/testbk.png");
 
-        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient_piano.mp3"));
-        bgMusic.setLooping(true);
-        bgMusic.play();
+//        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient_piano.mp3"));
+//        bgMusic.setLooping(true);
+//        bgMusic.play();
 
         initLevelStage();
         initUIStage();
@@ -110,7 +110,7 @@ public class LevelScreen implements Screen {
 
     private void initLevelStage() {
         levelStage.addPlayer(player);
-        levelStage.addPlayer(new PlayerActor(new Texture("badlogic.jpg"), this.levelStage, this, PlayerType.CREWMATE)); // static actor to test camera/player movement (temporary)
+        levelStage.addPlayer(new PlayerActor(new Texture("badlogic.jpg"), this.levelStage, this, PlayerType.CREWMATE, game)); // static actor to test camera/player movement (temporary)
         levelStage.setKeyboardFocus(player);
     }
 
@@ -160,11 +160,11 @@ public class LevelScreen implements Screen {
             if (object instanceof RectangleMapObject && object.getProperties().get("type", String.class).equals("VENT")) {
                 //temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
                 Integer ventID = object.getProperties().get("id", Integer.class);
-                temp.put(ventID, new Vent(((RectangleMapObject) object).getRectangle(), ventID));
-                // TODO: Build the vent network
+                temp.put(ventID, new Vent(((RectangleMapObject) object).getRectangle(), ventID, object.getProperties().get("nextIDs", String.class)));
             }
 
         }
+
         return temp;
     }
 
@@ -189,12 +189,12 @@ public class LevelScreen implements Screen {
     }
 
     public int getMapWidth() {
-        System.out.println(this.mapWidth);
+        //System.out.println(this.mapWidth);
         return this.mapWidth;
     }
 
     public int getMapHeight() {
-        System.out.println(this.mapHeight);
+        //System.out.println(this.mapHeight);
         return this.mapHeight;
     }
 
