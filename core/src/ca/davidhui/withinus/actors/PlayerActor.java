@@ -36,6 +36,8 @@ public class PlayerActor extends Actor {
     private int xDirection = 0;
     private int yDirection = 0;
 
+    private boolean inVent = false;
+
     private WithinUs game;
 
     public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType, WithinUs game) {
@@ -137,6 +139,11 @@ public class PlayerActor extends Actor {
             return;
         }
 
+        if(inVent){
+            exitVent();
+            return;
+        }
+
         if (this.currentInteractableOverlap instanceof Task) {
             Task selectedTask = (Task) this.currentInteractableOverlap;
             System.out.println("interacting with " + selectedTask.taskType);
@@ -151,6 +158,7 @@ public class PlayerActor extends Actor {
     }
 
     public void drawVentsUI(Vent baseVent) {
+        this.inVent = true;
 //        System.out.println(Arrays.toString(baseVent.nextNodes));
         Vector2 baseVentRectCenter = new Vector2();
         baseVent.boundRectangle.getCenter(baseVentRectCenter);
@@ -175,7 +183,7 @@ public class PlayerActor extends Actor {
 //            System.out.println(degFromOriginVent);
 //            System.out.println("pointer origin");
 //            System.out.println(nextPointerBounds);
-            VentArrowActor nextPointer = new VentArrowActor(this, this.game, nextPointerBounds.x, nextPointerBounds.y);
+            VentArrowActor nextPointer = new VentArrowActor(this, this.game, potentialNext, nextPointerBounds.x, nextPointerBounds.y);
             nextPointer.moveToCenter();
 
 
@@ -192,6 +200,26 @@ public class PlayerActor extends Actor {
             temp.remove();
         }
         this.boundVentArrowActors.clear();
+    }
+
+    public void exitVent() {
+        this.inVent = false;
+        clearVentArrows();
+    }
+
+    public void teleportTo(float x, float y, boolean center){
+        // Move Actor
+        this.setX(x);
+        this.setY(y);
+
+        // Move the camera
+        this.boundLevelStage.getCamera().position.x = x;
+        this.boundLevelStage.getCamera().position.y = y;
+        this.boundLevelStage.getCamera().update();
+
+        // Center playerActor
+        this.setX(this.getX()-this.playerTexture.getWidth()/2f);
+        this.setY(this.getY()-this.playerTexture.getHeight()/2f);
     }
 
     public void processKill() {
@@ -361,5 +389,9 @@ public class PlayerActor extends Actor {
     public void stopMovement () {
         this.xDirection = 0;
         this.yDirection = 0;
+    }
+
+    public boolean getInVent() {
+        return this.inVent;
     }
 }

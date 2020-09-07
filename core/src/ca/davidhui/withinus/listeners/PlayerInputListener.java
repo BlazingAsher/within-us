@@ -15,27 +15,32 @@ public class PlayerInputListener extends InputListener {
 
     @Override
     public boolean keyDown(InputEvent event, int keycode) {
-        if(keycode == Input.Keys.A){
-            boundPlayer.setxDirection(-1);
-        }
-        if(keycode == Input.Keys.D){
-            boundPlayer.setxDirection(1);
-        }
-        if(keycode == Input.Keys.W){
-            boundPlayer.setyDirection(1);
+        if(!this.boundPlayer.getInVent()){
+            if(keycode == Input.Keys.A){
+                boundPlayer.setxDirection(-1);
+            }
+            if(keycode == Input.Keys.D){
+                boundPlayer.setxDirection(1);
+            }
+            if(keycode == Input.Keys.W){
+                boundPlayer.setyDirection(1);
 
+            }
+            if(keycode == Input.Keys.S){
+                boundPlayer.setyDirection(-1);
+            }
+            if(keycode == Input.Keys.Q){
+                System.out.println("killing");
+                boundPlayer.processKill();
+            }
         }
-        if(keycode == Input.Keys.S){
-            boundPlayer.setyDirection(-1);
-        }
+
+
         if(keycode == Input.Keys.E){
             System.out.println("using");
             boundPlayer.processInteract();
         }
-        if(keycode == Input.Keys.Q){
-            System.out.println("killing");
-            boundPlayer.processKill();
-        }
+
         return true;
     }
 

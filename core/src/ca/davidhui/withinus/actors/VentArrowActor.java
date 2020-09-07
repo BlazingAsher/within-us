@@ -1,6 +1,7 @@
 package ca.davidhui.withinus.actors;
 
 import ca.davidhui.withinus.WithinUs;
+import ca.davidhui.withinus.models.Vent;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
@@ -12,10 +13,12 @@ public class VentArrowActor extends Actor {
     private PlayerActor boundPlayer;
     private WithinUs game;
     private Texture arrowTexture;
+    private Vent pointingTo;
 
-    public VentArrowActor(PlayerActor boundPlayer, WithinUs game, float x, float y){
+    public VentArrowActor(final PlayerActor boundPlayer, WithinUs game, final Vent pointingTo, float x, float y){
         this.boundPlayer = boundPlayer;
         this.game = game;
+        this.pointingTo = pointingTo;
 
         this.arrowTexture = this.game.getAssetManager().get("images/graphics/VentArrow.png", Texture.class);
 
@@ -27,6 +30,9 @@ public class VentArrowActor extends Actor {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("clicked");
                 System.out.println(this);
+                boundPlayer.teleportTo(pointingTo.boundRectangle.x+pointingTo.boundRectangle.width/2, pointingTo.boundRectangle.y+pointingTo.boundRectangle.height/2, true);
+                boundPlayer.clearVentArrows();
+                boundPlayer.drawVentsUI(pointingTo);
                 return true;
             }
         });
