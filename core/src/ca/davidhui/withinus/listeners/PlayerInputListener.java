@@ -1,7 +1,6 @@
 package ca.davidhui.withinus.listeners;
 
 import ca.davidhui.withinus.actors.PlayerActor;
-import ca.davidhui.withinus.enums.PlayerType;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;

@@ -32,4 +32,9 @@ public class Vent extends Interactable{
     public VentActor getVentActor() {
         return ventActor;
     }
+
+    @Override
+    public void setOutlined() {
+        this.ventActor.setOutlined();
+    }
 }

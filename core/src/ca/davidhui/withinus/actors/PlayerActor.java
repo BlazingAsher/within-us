@@ -14,6 +14,8 @@ import ca.davidhui.withinus.screens.LevelScreen;
 import ca.davidhui.withinus.stages.LevelStage;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -70,6 +72,17 @@ public class PlayerActor extends Actor {
 
     public Rectangle getRectangle() {
         return new Rectangle(this.getX(), this.getY(), this.playerTexture.getWidth(), this.playerTexture.getHeight());
+    }
+
+    public Circle getInteractCircle() {
+        float padding = 64f;
+        return new Circle(this.getX()+this.playerTexture.getWidth()/2f, this.getY()+this.playerTexture.getHeight()/2f, this.playerTexture.getWidth()+padding);
+        //return new Circle(this.getX()-padding/2, this.getY()-padding/2, this.playerTexture.getWidth()+padding);
+    }
+
+    public Circle getKillCircle() {
+        float padding = 64f;
+        return new Circle(this.getX()-padding/2, this.getY()-padding/2, this.playerTexture.getWidth()+padding);
     }
 
     private float movePlayer(float desiredAmount, boolean isX) {
@@ -289,17 +302,19 @@ public class PlayerActor extends Actor {
 
     private void checkTaskCollision() {
         for (Task levelTask : boundLevelStage.getMapTasks()) {
-            if (getRectangle().overlaps(levelTask.boundRectangle) && !levelTask.isComplete()) {
+            if (Intersector.overlaps(this.getInteractCircle(), levelTask.boundRectangle) && !levelTask.isComplete()) {
                 //System.out.println("task!");
                 this.currentInteractableOverlap = levelTask;
+                this.currentInteractableOverlap.setOutlined();
                 return;
             }
         }
         if(this.playerType == PlayerType.IMPOSTOR){
             for (Vent levelVent : boundLevelStage.getMapVents().values()) {
-                if (getRectangle().overlaps(levelVent.boundRectangle)) {
+                if (Intersector.overlaps(this.getInteractCircle(), levelVent.boundRectangle)) {
                     //System.out.println("task!");
                     this.currentInteractableOverlap = levelVent;
+                    this.currentInteractableOverlap.setOutlined();
                     return;
                 }
             }
@@ -313,7 +328,7 @@ public class PlayerActor extends Actor {
 
         for (PlayerActor otherPlayer : this.boundLevelStage.getPlayers()) {
             if (otherPlayer != this) {
-                if (this.getRectangle().overlaps(otherPlayer.getRectangle())) {
+                if (Intersector.overlaps(this.getKillCircle(), otherPlayer.getRectangle())) {
                     if (this.playerState == PlayerState.ALIVE && otherPlayer.getPlayerState() == PlayerState.DEAD) {
                         System.out.println("overlap with other!");
                         currentPlayerOverlap = otherPlayer;

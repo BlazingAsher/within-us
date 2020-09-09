@@ -45,6 +45,11 @@ public class Task extends Interactable {
         }
     }
 
+    @Override
+    public void setOutlined() {
+        this.taskActor.setOutlined();
+    }
+
     public Pixmap getTaskPixMap() {
         return taskPixMap;
     }
