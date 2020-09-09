@@ -74,12 +74,8 @@ public class LevelScreen implements Screen {
 
         levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), getMapVents(), this);
 
-        //Gdx.input.setInputProcessor(levelStage);
-
         player = new PlayerActor(new Texture("badlogic.jpg"), levelStage, this, PlayerType.IMPOSTOR, game);
         levelStage.setSelfPlayer(player);
-
-//        mapBk = new Texture("images/testbk.png");
 
 //        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient_piano.mp3"));
 //        bgMusic.setLooping(true);
@@ -91,7 +87,7 @@ public class LevelScreen implements Screen {
 
         runningInput.addProcessor(hudStage);
         runningInput.addProcessor(levelStage);
-        Gdx.input.setInputProcessor(runningInput);
+
 
         this.gameState = GameState.RUNNING;
 
@@ -152,13 +148,16 @@ public class LevelScreen implements Screen {
         return temp;
     }
 
+    /**
+     * Indexes the vents on the map
+     * @return a Map of all the Vents
+     */
     private Map<Integer, Vent> getMapVents() {
         MapLayer layer = levelMap.getLayers().get(2);
         Map<Integer, Vent> temp = new HashMap<>();
 
         for (MapObject object : layer.getObjects()) {
             if (object instanceof RectangleMapObject && object.getProperties().get("type", String.class).equals("VENT")) {
-                //temp.add(new Task(TaskType.valueOf((String) object.getProperties().get("taskName")), ((RectangleMapObject) object).getRectangle(), this.game));
                 Integer ventID = object.getProperties().get("id", Integer.class);
                 temp.put(ventID, new Vent(((RectangleMapObject) object).getRectangle(), ventID, object.getProperties().get("nextIDs", String.class)));
             }
@@ -200,11 +199,12 @@ public class LevelScreen implements Screen {
 
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(runningInput);
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         levelMapRenderer.setView((OrthographicCamera) levelStage.getCamera());
         levelMapRenderer.render();
@@ -257,8 +257,11 @@ public class LevelScreen implements Screen {
         for (Task levelTask : levelStage.getMapTasks()) {
             levelTask.getTaskPixMap().dispose();
         }
+        levelStage.clear();
         levelStage.dispose();
+        uiStage.clear();
         uiStage.dispose();
+        hudStage.clear();
         hudStage.dispose();
         levelMapRenderer.dispose();
         levelMap.dispose();

@@ -1,15 +1,19 @@
 package ca.davidhui.withinus.listeners;
 
+import ca.davidhui.withinus.WithinUs;
 import ca.davidhui.withinus.actors.PlayerActor;
+import ca.davidhui.withinus.enums.GameScreenType;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 public class PlayerInputListener extends InputListener {
     private final PlayerActor boundPlayer;
+    private WithinUs game;
 
-    public PlayerInputListener(PlayerActor boundPlayer){
+    public PlayerInputListener(PlayerActor boundPlayer, WithinUs game){
         this.boundPlayer = boundPlayer;
+        this.game = game;
     }
 
     @Override
@@ -34,6 +38,9 @@ public class PlayerInputListener extends InputListener {
             }
         }
 
+        if(keycode == Input.Keys.O){
+            this.game.changeScreen(GameScreenType.DEFEAT);
+        }
 
         if(keycode == Input.Keys.E){
             System.out.println("using");

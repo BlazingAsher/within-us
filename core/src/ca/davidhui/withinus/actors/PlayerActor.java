@@ -53,7 +53,7 @@ public class PlayerActor extends Actor {
 
         setBounds(getX(), getY(), playerTexture.getWidth(), playerTexture.getHeight());
 
-        addListener(new PlayerInputListener(this));
+        addListener(new PlayerInputListener(this, game));
 
         if(playerType == PlayerType.IMPOSTOR){
             this.boundVentArrowActors = new HashSet<>();
