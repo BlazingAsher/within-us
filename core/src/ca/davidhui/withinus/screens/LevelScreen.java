@@ -3,11 +3,10 @@ package ca.davidhui.withinus.screens;
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.WithinUs;
 import ca.davidhui.withinus.actors.PlayerActor;
-import ca.davidhui.withinus.actors.VentActor;
+import ca.davidhui.withinus.enums.GameScreenType;
 import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.enums.TaskType;
-import ca.davidhui.withinus.models.Interactable;
 import ca.davidhui.withinus.models.Task;
 import ca.davidhui.withinus.models.Vent;
 import ca.davidhui.withinus.stages.HUDStage;
@@ -28,7 +27,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -63,6 +61,9 @@ public class LevelScreen implements Screen {
     private HUDStage hudStage;
 
     private final InputMultiplexer runningInput = new InputMultiplexer();
+
+    private boolean emergencyActive;
+    private float emergencyTimeLeft;
 
     public LevelScreen(final WithinUs game) {
         this.game = game;
@@ -197,6 +198,29 @@ public class LevelScreen implements Screen {
         return this.mapHeight;
     }
 
+    public void emergencyStarted() {
+        this.uiStage.getTintActor().enableAction();
+        this.emergencyTimeLeft = 30f;
+        this.emergencyActive = true;
+    }
+
+    public void emergencyStopped() {
+        this.uiStage.getTintActor().disableAction();
+        this.emergencyActive = false;
+    }
+
+    public void emergencyFailed() {
+        this.uiStage.getTintActor().disableAction();
+        if(this.player.getPlayerType() == PlayerType.CREWMATE){
+            this.game.changeScreen(GameScreenType.DEFEAT);
+        }
+        else {
+            this.game.changeScreen(GameScreenType.VICTORY);
+        }
+
+        System.out.println("emergency was not solved");
+    }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(runningInput);
@@ -225,6 +249,13 @@ public class LevelScreen implements Screen {
                 this.levelStage.getSelfPlayer().stopMovement();
             }
             Gdx.input.setInputProcessor(uiStage);
+        }
+
+        if(this.emergencyActive){
+            this.emergencyTimeLeft -= delta;
+            if(this.emergencyTimeLeft < 0){
+                emergencyFailed();
+            }
         }
     }
 
