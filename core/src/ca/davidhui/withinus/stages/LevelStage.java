@@ -7,7 +7,6 @@ import ca.davidhui.withinus.models.Vent;
 import ca.davidhui.withinus.screens.LevelScreen;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 

@@ -24,7 +24,7 @@ public class TaskActor extends Actor {
         if(this.outlineActive){
             batch.setColor(Color.RED);
         }
-        batch.draw(this.boundTask.getTaskTextureRegion(), this.boundTask.boundRectangle.x, this.boundTask.boundRectangle.y, this.boundTask.boundRectangle.width, this.boundTask.boundRectangle.height);
+        batch.draw(this.boundTask.getTaskTexture(), this.boundTask.boundRectangle.x, this.boundTask.boundRectangle.y, this.boundTask.boundRectangle.width, this.boundTask.boundRectangle.height);
         batch.setColor(Color.WHITE);
         this.outlineActive = false;
     }

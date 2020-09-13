@@ -15,7 +15,7 @@ public class Task extends Interactable {
 
     private final Pixmap taskPixMap; // Using this for now to outline the task TODO: Change it to an Animation!
     private final TaskActor taskActor; // This is the Actor that will be added to the LEVEL STAGE
-    private final TextureRegion taskTextureRegion;
+    private final Texture taskTexture;
     private final WithinUs game;
 
     private final TaskGroup uiGroup; // This is the Group that will be added to the UI STAGE
@@ -32,7 +32,7 @@ public class Task extends Interactable {
         this.taskPixMap = new Pixmap((int) Math.ceil(taskRectangle.width), (int) Math.ceil(taskRectangle.height), Pixmap.Format.RGBA8888);
         this.taskPixMap.setColor(Color.YELLOW);
         this.taskPixMap.fillRectangle(0, 0, (int) Math.ceil(taskRectangle.width), (int) Math.ceil(taskRectangle.height));
-        this.taskTextureRegion = new TextureRegion(new Texture(this.taskPixMap));
+        this.taskTexture = new Texture(this.taskPixMap);
         this.taskActor = new TaskActor(this);
 
         // Initialize the corresponding ui group for the UI Stage
@@ -58,8 +58,8 @@ public class Task extends Interactable {
         return taskActor;
     }
 
-    public TextureRegion getTaskTextureRegion() {
-        return taskTextureRegion;
+    public Texture getTaskTexture() {
+        return taskTexture;
     }
 
     public TaskGroup getUiGroup() {
