@@ -12,6 +12,7 @@ import ca.davidhui.withinus.models.Vent;
 import ca.davidhui.withinus.stages.HUDStage;
 import ca.davidhui.withinus.stages.LevelStage;
 import ca.davidhui.withinus.stages.UIStage;
+import ca.davidhui.withinus.stages.VoteStage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -49,6 +50,7 @@ public class LevelScreen implements Screen {
 
     private LevelStage levelStage;
     private UIStage uiStage;
+    private VoteStage votingStage;
     private TiledMap levelMap;
     private MapProperties levelMapProperties;
     private int mapWidth;
@@ -64,6 +66,8 @@ public class LevelScreen implements Screen {
 
     private boolean emergencyActive;
     private float emergencyTimeLeft;
+
+    private ArrayList<PlayerActor> otherPlayers;
 
     public LevelScreen(final WithinUs game) {
         this.game = game;
@@ -85,6 +89,7 @@ public class LevelScreen implements Screen {
         initLevelStage();
         initUIStage();
         initHUDStage();
+        initVotingStage();
 
         runningInput.addProcessor(hudStage);
         runningInput.addProcessor(levelStage);
@@ -92,6 +97,10 @@ public class LevelScreen implements Screen {
 
         this.gameState = GameState.RUNNING;
 
+    }
+
+    private void initVotingStage() {
+        votingStage = new VoteStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this.spriteBatch, player, otherPlayers);
     }
 
     private void initLevelMap() {
@@ -151,6 +160,7 @@ public class LevelScreen implements Screen {
 
     /**
      * Indexes the vents on the map
+     *
      * @return a Map of all the Vents
      */
     private Map<Integer, Vent> getMapVents() {
@@ -211,10 +221,9 @@ public class LevelScreen implements Screen {
 
     public void emergencyFailed() {
         this.uiStage.getTintActor().disableAction();
-        if(this.player.getPlayerType() == PlayerType.CREWMATE){
+        if (this.player.getPlayerType() == PlayerType.CREWMATE) {
             this.game.changeScreen(GameScreenType.DEFEAT);
-        }
-        else {
+        } else {
             this.game.changeScreen(GameScreenType.VICTORY);
         }
 
@@ -236,8 +245,15 @@ public class LevelScreen implements Screen {
         levelStage.act(Gdx.graphics.getDeltaTime());
         levelStage.draw();
 
+        if (gameState.equals(GameState.VOTING)) {
+            System.out.println("hi");
+            votingStage.act(Gdx.graphics.getDeltaTime());
+            votingStage.draw();
+        }
+
         hudStage.act(Gdx.graphics.getDeltaTime());
         hudStage.draw();
+
 
         uiStage.act(Gdx.graphics.getDeltaTime());
         uiStage.draw();
@@ -245,15 +261,15 @@ public class LevelScreen implements Screen {
         if (this.gameState == GameState.RUNNING) {
             Gdx.input.setInputProcessor(runningInput);
         } else if (this.gameState == GameState.VOTING || this.gameState == GameState.DOING_TASK) {
-            if(this.levelStage.getSelfPlayer() != null){
+            if (this.levelStage.getSelfPlayer() != null) {
                 this.levelStage.getSelfPlayer().stopMovement();
             }
             Gdx.input.setInputProcessor(uiStage);
         }
 
-        if(this.emergencyActive){
+        if (this.emergencyActive) {
             this.emergencyTimeLeft -= delta;
-            if(this.emergencyTimeLeft < 0){
+            if (this.emergencyTimeLeft < 0) {
                 emergencyFailed();
             }
         }
