@@ -1,4 +1,4 @@
-package ca.davidhui.withinus.actors;
+package ca.davidhui.withinus.actors.ui;
 
 import ca.davidhui.withinus.GameConstants;
 import com.badlogic.gdx.graphics.Color;
@@ -18,6 +18,8 @@ public class ScreenTintActor extends Actor {
         this.taskPixMap.setColor(new Color(1,0,0,0.5f));
         this.taskPixMap.fillRectangle(0, 0, GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT);
         this.taskTextureRegion = new Texture(this.taskPixMap);
+
+        this.taskPixMap.dispose();
 
         this.isActive = false;
         this.enabled = false;

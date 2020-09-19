@@ -9,10 +9,7 @@ import ca.davidhui.withinus.enums.PlayerType;
 import ca.davidhui.withinus.enums.TaskType;
 import ca.davidhui.withinus.models.Task;
 import ca.davidhui.withinus.models.Vent;
-import ca.davidhui.withinus.stages.HUDStage;
-import ca.davidhui.withinus.stages.LevelStage;
-import ca.davidhui.withinus.stages.UIStage;
-import ca.davidhui.withinus.stages.VoteStage;
+import ca.davidhui.withinus.stages.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -51,6 +48,8 @@ public class LevelScreen implements Screen {
     private LevelStage levelStage;
     private UIStage uiStage;
     private VoteStage votingStage;
+    private OverlayStage overlayStage;
+
     private TiledMap levelMap;
     private MapProperties levelMapProperties;
     private int mapWidth;
@@ -80,13 +79,14 @@ public class LevelScreen implements Screen {
         levelStage = new LevelStage(new ExtendViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT, levelCamera), spriteBatch, getMapCollision(), getMapTasks(), getMapVents(), this);
 
         player = new PlayerActor(new Texture("badlogic.jpg"), levelStage, this, PlayerType.IMPOSTOR, game);
-        levelStage.setSelfPlayer(player);
+        levelStage.addSelfPlayer(player);
 
 //        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient_piano.mp3"));
 //        bgMusic.setLooping(true);
 //        bgMusic.play();
 
         initLevelStage();
+        initOverlayStage();
         initUIStage();
         initHUDStage();
         initVotingStage();
@@ -96,11 +96,16 @@ public class LevelScreen implements Screen {
 
 
         this.gameState = GameState.RUNNING;
+//        emergencyStarted();
 
     }
 
     private void initVotingStage() {
         votingStage = new VoteStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this.spriteBatch, player, otherPlayers);
+    }
+
+    private void initOverlayStage() {
+        this.overlayStage = new OverlayStage(new StretchViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this, this.spriteBatch);
     }
 
     private void initLevelMap() {
@@ -115,7 +120,7 @@ public class LevelScreen implements Screen {
     }
 
     private void initLevelStage() {
-        levelStage.addPlayer(player);
+        //levelStage.addPlayer(player);
         levelStage.addPlayer(new PlayerActor(new Texture("badlogic.jpg"), this.levelStage, this, PlayerType.CREWMATE, game)); // static actor to test camera/player movement (temporary)
         levelStage.setKeyboardFocus(player);
     }
@@ -209,18 +214,18 @@ public class LevelScreen implements Screen {
     }
 
     public void emergencyStarted() {
-        this.uiStage.getTintActor().enableAction();
+        this.overlayStage.getTintActor().enableAction();
         this.emergencyTimeLeft = 30f;
         this.emergencyActive = true;
     }
 
     public void emergencyStopped() {
-        this.uiStage.getTintActor().disableAction();
+        this.overlayStage.getTintActor().disableAction();
         this.emergencyActive = false;
     }
 
     public void emergencyFailed() {
-        this.uiStage.getTintActor().disableAction();
+        this.overlayStage.getTintActor().disableAction();
         if (this.player.getPlayerType() == PlayerType.CREWMATE) {
             this.game.changeScreen(GameScreenType.DEFEAT);
         } else {
@@ -237,25 +242,33 @@ public class LevelScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         levelMapRenderer.setView((OrthographicCamera) levelStage.getCamera());
         levelMapRenderer.render();
 
         levelStage.act(Gdx.graphics.getDeltaTime());
+        levelStage.getViewport().apply();
         levelStage.draw();
+
+        overlayStage.act(Gdx.graphics.getDeltaTime());
+        overlayStage.getViewport().apply();
+        overlayStage.draw();
 
         if (gameState.equals(GameState.VOTING)) {
             System.out.println("hi");
             votingStage.act(Gdx.graphics.getDeltaTime());
+            votingStage.getViewport().apply();
             votingStage.draw();
         }
 
         hudStage.act(Gdx.graphics.getDeltaTime());
+        hudStage.getViewport().apply();
         hudStage.draw();
 
-
+        // UI Stage should be the last stage drawn. DO NOT draw anything on top of it!
         uiStage.act(Gdx.graphics.getDeltaTime());
+        uiStage.getViewport().apply();
         uiStage.draw();
 
         if (this.gameState == GameState.RUNNING) {
@@ -281,6 +294,8 @@ public class LevelScreen implements Screen {
         levelStage.getCamera().position.set(levelStage.getSelfPlayer().getX(), levelStage.getSelfPlayer().getY(), 0);
         uiStage.getViewport().update(width, height, true);
         hudStage.getViewport().update(width, height, true);
+        overlayStage.getViewport().update(width, height, true);
+        votingStage.getViewport().update(width, height, true);
     }
 
     @Override

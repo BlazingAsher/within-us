@@ -3,6 +3,7 @@ package ca.davidhui.withinus.actors;
 import ca.davidhui.withinus.GameConstants;
 import ca.davidhui.withinus.Utils;
 import ca.davidhui.withinus.WithinUs;
+import ca.davidhui.withinus.actors.ui.ScreenBlockActor;
 import ca.davidhui.withinus.enums.GameState;
 import ca.davidhui.withinus.enums.PlayerState;
 import ca.davidhui.withinus.enums.PlayerType;
@@ -39,6 +40,8 @@ public class PlayerActor extends Actor {
     private int yDirection = 0;
 
     private boolean inVent = false;
+
+    private ScreenBlockActor boundScreenBlockActor;
 
     private WithinUs game;
 
@@ -83,6 +86,11 @@ public class PlayerActor extends Actor {
     public Circle getKillCircle() {
         float padding = 64f;
         return new Circle(this.getX()-padding/2, this.getY()-padding/2, this.playerTexture.getWidth()+padding);
+    }
+
+    public void bindScreenBlockActor(ScreenBlockActor screenBlockActor){
+        this.boundScreenBlockActor = screenBlockActor;
+        screenBlockActor.bindPlayer(this);
     }
 
     private float movePlayer(float desiredAmount, boolean isX) {
@@ -372,6 +380,10 @@ public class PlayerActor extends Actor {
         processMovement(delta);
         checkTaskCollision();
         checkPlayerCollision();
+
+        if(this.boundScreenBlockActor != null){
+            this.boundScreenBlockActor.centerAt(getX(), getY());
+        }
 
         //System.out.println(currentInteractableOverlap);
         //System.out.println(currentKillableOverlap);
