@@ -101,7 +101,11 @@ public class LevelScreen implements Screen {
     }
 
     private void initVotingStage() {
-        votingStage = new VoteStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this.spriteBatch, player, otherPlayers);
+        ArrayList<String> playerActors = new ArrayList<>();
+        for (int  i = 0; i < 10; i++) {
+            playerActors.add("Player " + i);
+        }
+        votingStage = new VoteStage(new FitViewport(GameConstants.VIEWPORT_WIDTH, GameConstants.VIEWPORT_HEIGHT), this.game, this.spriteBatch, player, playerActors);
     }
 
     private void initOverlayStage() {
@@ -256,7 +260,7 @@ public class LevelScreen implements Screen {
         overlayStage.draw();
 
         if (gameState.equals(GameState.VOTING)) {
-            System.out.println("hi");
+//            System.out.println("hi");
             votingStage.act(Gdx.graphics.getDeltaTime());
             votingStage.getViewport().apply();
             votingStage.draw();
@@ -277,7 +281,14 @@ public class LevelScreen implements Screen {
             if (this.levelStage.getSelfPlayer() != null) {
                 this.levelStage.getSelfPlayer().stopMovement();
             }
-            Gdx.input.setInputProcessor(uiStage);
+            switch (gameState) {
+                case VOTING:
+                    Gdx.input.setInputProcessor(votingStage);
+                    return;
+                case DOING_TASK:
+                    Gdx.input.setInputProcessor(uiStage);
+                    return;
+            }
         }
 
         if (this.emergencyActive) {

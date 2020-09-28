@@ -29,6 +29,7 @@ public class PlayerActor extends Actor {
 
     private PlayerState playerState;
     private PlayerType playerType;
+    private String username = "default";
 
     private Interactable currentInteractableOverlap; // Stores the current actor
     private PlayerActor currentPlayerOverlap;
@@ -45,6 +46,29 @@ public class PlayerActor extends Actor {
 
     private WithinUs game;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType, WithinUs game, String username) {
+        this.game = game;
+        this.playerTexture = img;
+        this.boundLevelStage = boundLevelStage;
+        this.boundLevelScreen = boundLevelScreen;
+
+        this.playerType = playerType;
+        this.playerState = PlayerState.DEAD;
+
+        setBounds(getX(), getY(), playerTexture.getWidth(), playerTexture.getHeight());
+
+        addListener(new PlayerInputListener(this, game));
+
+        if(playerType == PlayerType.IMPOSTOR){
+            this.boundVentArrowActors = new HashSet<>();
+        }
+
+        this.username = username;
+    }
     public PlayerActor(Texture img, LevelStage boundLevelStage, LevelScreen boundLevelScreen, PlayerType playerType, WithinUs game) {
         this.game = game;
         this.playerTexture = img;
