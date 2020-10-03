@@ -43,15 +43,14 @@ public class Task extends Interactable {
             default:
                 uiGroup = new ClickButtonTask(this.game, this);
         }
+
+        // dispose of the pixmap
+        this.taskPixMap.dispose();
     }
 
     @Override
     public void setOutlined() {
         this.taskActor.setOutlined();
-    }
-
-    public Pixmap getTaskPixMap() {
-        return taskPixMap;
     }
 
     public TaskActor getTaskActor() {

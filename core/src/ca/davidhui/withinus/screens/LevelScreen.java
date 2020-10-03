@@ -94,9 +94,7 @@ public class LevelScreen implements Screen {
         runningInput.addProcessor(hudStage);
         runningInput.addProcessor(levelStage);
 
-
         this.gameState = GameState.RUNNING;
-//        emergencyStarted();
 
     }
 
@@ -124,7 +122,6 @@ public class LevelScreen implements Screen {
     }
 
     private void initLevelStage() {
-        //levelStage.addPlayer(player);
         levelStage.addPlayer(new PlayerActor(new Texture("badlogic.jpg"), this.levelStage, this, PlayerType.CREWMATE, game)); // static actor to test camera/player movement (temporary)
         levelStage.setKeyboardFocus(player);
     }
@@ -217,26 +214,34 @@ public class LevelScreen implements Screen {
         return this.mapHeight;
     }
 
+    /**
+     * Emergency has been started
+     */
     public void emergencyStarted() {
         this.overlayStage.getTintActor().enableAction();
         this.emergencyTimeLeft = 30f;
         this.emergencyActive = true;
     }
 
+    /**
+     * Emergency has been stopped
+     */
     public void emergencyStopped() {
         this.overlayStage.getTintActor().disableAction();
         this.emergencyActive = false;
     }
 
+    /**
+     * Emergency failed
+     */
     public void emergencyFailed() {
         this.overlayStage.getTintActor().disableAction();
+
         if (this.player.getPlayerType() == PlayerType.CREWMATE) {
             this.game.changeScreen(GameScreenType.DEFEAT);
         } else {
             this.game.changeScreen(GameScreenType.VICTORY);
         }
-
-        System.out.println("emergency was not solved");
     }
 
     @Override
@@ -260,7 +265,6 @@ public class LevelScreen implements Screen {
         overlayStage.draw();
 
         if (gameState.equals(GameState.VOTING)) {
-//            System.out.println("hi");
             votingStage.act(Gdx.graphics.getDeltaTime());
             votingStage.getViewport().apply();
             votingStage.draw();
@@ -294,6 +298,8 @@ public class LevelScreen implements Screen {
         if (this.emergencyActive) {
             this.emergencyTimeLeft -= delta;
             if (this.emergencyTimeLeft < 0) {
+                // call emergency failed if time has run out
+                // TODO: replace with server-side call
                 emergencyFailed();
             }
         }
@@ -326,10 +332,6 @@ public class LevelScreen implements Screen {
 
     @Override
     public void dispose() {
-//        player.dispose();
-        for (Task levelTask : levelStage.getMapTasks()) {
-            levelTask.getTaskPixMap().dispose();
-        }
         levelStage.clear();
         levelStage.dispose();
         uiStage.clear();
