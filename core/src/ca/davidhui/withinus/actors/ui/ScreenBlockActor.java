@@ -22,15 +22,19 @@ public class ScreenBlockActor extends Actor {
         this.taskPixMap.setBlending(Pixmap.Blending.None);
         this.taskPixMap.setColor(new Color(0,0,0,1));
         this.taskPixMap.fillRectangle(0, 0, GameConstants.VIEWPORT_WIDTH*2, GameConstants.VIEWPORT_HEIGHT*2);
-        this.taskPixMap.setColor(new Color(0,0,0,0));
-        this.taskPixMap.fillCircle(this.taskPixMap.getWidth()/2, this.taskPixMap.getHeight()/2, 200);
-//        this.taskPixMap.setColor(new Color);
+
+        // create a feathering effect
+        int featherRad = 30;
+        for(int i=0;i<featherRad;i++){
+            this.taskPixMap.setColor(new Color(0,0,0,(featherRad-i)/(float)featherRad));
+            this.taskPixMap.fillCircle(this.taskPixMap.getWidth()/2, this.taskPixMap.getHeight()/2, 200+featherRad-i);
+        }
+
         this.taskTextureRegion = new Texture(this.taskPixMap);
 
         this.taskPixMap.dispose();
 
         this.isActive = true; // currently tinting the screen
-//        this.enabled = false; // tinting timer is active, may not be tinting the screen though
     }
 
     @Override
@@ -46,14 +50,6 @@ public class ScreenBlockActor extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
-//        if(this.enabled){
-//            accumulator += delta;
-//            if(accumulator > 1.2f){
-//                this.isActive = !this.isActive;
-//                accumulator = 0;
-//            }
-//        }
-//        System.out.println(getX());
 
     }
 
